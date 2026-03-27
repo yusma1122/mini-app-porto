@@ -543,6 +543,12 @@
         border: 1px solid rgba(247, 131, 85, 0.2);
       }
 
+      .badge-company-profile {
+        background: rgba(85, 247, 247, 0.1);
+        color: #2ccaca;
+        border: 1px solid rgba(85, 196, 247, 0.2);
+      }
+
       .card-name {
         font-family: "Syne", sans-serif;
         font-weight: 700;
@@ -602,7 +608,7 @@
       .stat-num {
         font-family: "Syne", sans-serif;
         font-size: 2.4rem;
-        font-weight: 800;
+        font-weight: 700;
         background: linear-gradient(135deg, var(--teal), #a1a1a1);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -1015,7 +1021,7 @@
               <div class="stat-label">Kategori</div>
             </div>
             <div class="stat-item" style="background: var(--bg-card)">
-              <div class="stat-num">∞</div>
+              <div class="stat-num">2</div>
               <div class="stat-label">Company Profile</div>
             </div>
             <div class="stat-item" style="background: var(--bg-card)">
@@ -1079,16 +1085,36 @@
                     <div class="card-icon">
                       <i :class="app.icon"></i>
                     </div>
+
                     <span
                       class="card-category-badge"
-                      :class="app.category === 'fungsi' ? 'badge-fungsi' : 'badge-experimental'"
+                      :class="
+                      app.category === 'fungsi'
+                        ? 'badge-fungsi'
+                        : app.category === 'company-profile'
+                        ? 'badge-company-profile'
+                        : 'badge-experimental'
+                    "
                     >
                       <i
-                        :class="app.category === 'fungsi' ? 'fa-solid fa-wrench' : 'fa-solid fa-flask'"
+                        :class="
+                        app.category === 'fungsi'
+                          ? 'fa-solid fa-wrench'
+                          : app.category === 'company-profile'
+                          ? 'fa-solid fa-building'
+                          : 'fa-solid fa-flask'
+                      "
                         style="font-size: 0.65rem"
                       ></i>
+
                       <span
-                        x-text="app.category === 'fungsi' ? 'Fungsi' : 'Experimental'"
+                        x-text="
+                        app.category === 'fungsi'
+                          ? 'Fungsi'
+                          : app.category === 'company-profile'
+                          ? 'Company Profile'
+                          : 'Experimental'
+                      "
                       ></span>
                     </span>
                   </div>
@@ -1437,7 +1463,7 @@
               description:
                 "Bersihkan teks dari spasi berlebih, karakter aneh, dan format yang tidak diinginkan hanya dalam satu klik.",
               category: "fungsi",
-              icon: "fa-solid fa-broom",
+              icon: "fa-solid fa-font",
               link: "https://yusma1122.github.io/text-tools/",
             },
             {
@@ -1445,7 +1471,7 @@
               description:
                 "Hitung skor permainan bulu tangkis menggunakan wireless device untuk mempermudah.",
               category: "fungsi",
-              icon: "fa-solid fa-broom",
+              icon: "fa-solid fa-table-tennis-paddle-ball",
               link: "https://yusma1122.github.io/badminton-score-counter/",
             },
             {
@@ -1453,7 +1479,7 @@
               description:
                 "Aplikasi untuk menghitung nilai waktu dan jam kerja yang setara dengan biaya sebuah pembelian.",
               category: "fungsi",
-              icon: "fa-solid fa-brackets-curly",
+              icon: "fa-solid fa-clock",
               link: "https://yusma1122.github.io/money-time/",
             },
             {
@@ -1461,14 +1487,14 @@
               description:
                 "Hitung apakah upgrade gadget benar-benar layak—berdasarkan biaya per hari, umur pakai, dan manfaat fitur baru.",
               category: "fungsi",
-              icon: "fa-brands fa-markdown",
+              icon: "fa-solid fa-chart-line",
               link: "https://yusma1122.github.io/Kalkulator-Keputusan-Ganti-Gadget/",
             },
             {
               name: "WhatsApp Link Generator Pro",
               description: "Generate link untuk wa.me whatsapp web.",
               category: "fungsi",
-              icon: "fa-brands fa-markdown",
+              icon: "fa-brands fa-whatsapp",
               link: "https://yusma1122.github.io/wa-link-generator/",
             },
             {
@@ -1476,7 +1502,7 @@
               description:
                 "Hitung zakat harta mu menggunakan app sederhana ini.",
               category: "fungsi",
-              icon: "fa-solid fa-eye-dropper",
+              icon: "fa-solid fa-hand-holding-dollar",
               link: "https://yusma1122.github.io/hitung-zakat/",
             },
             {
@@ -1484,7 +1510,7 @@
               description:
                 "Prediksi durasi charge batre sepeda listrik dengan data csv guna untuk maintenance yang lebih baik",
               category: "fungsi",
-              icon: "fa-solid fa-code",
+              icon: "fa-solid fa-battery-half",
               link: "https://yusma1122.github.io/battery-charging-analyzer/",
             },
             {
@@ -1492,7 +1518,7 @@
               description:
                 "Hitung nominal waris anda untuk membaginya sesuai syariat islam.",
               category: "fungsi",
-              icon: "fa-solid fa-clock-rotate-left",
+              icon: "fa-solid fa-scale-balanced",
               link: "https://yusma1122.github.io/kalkulator-waris/",
             },
             {
@@ -1500,7 +1526,7 @@
               description:
                 "Mengambil nama acak dalam skema kloter untuk mempermudah undian berbasis digital.",
               category: "fungsi",
-              icon: "fa-solid fa-magnifying-glass-chart",
+              icon: "fa-solid fa-shuffle",
               link: "https://yusma1122.github.io/name-picker/",
             },
             {
@@ -1508,48 +1534,33 @@
               description:
                 "Timer OSCE yang dilengkapi dengan fitur skejul mudah digunakan dan praktis.",
               category: "fungsi",
-              icon: "fa-solid fa-magnifying-glass-chart",
+              icon: "fa-solid fa-stopwatch",
               link: "https://yusma1122.github.io/osce-timer/",
             },
             {
               name: "Time Refliection",
               description:
-                "Refleksi waktu yang telah berlalu untuk menumbuhkan rasa syukur",
+                "Refleksi waktu yang telah berlalu untuk menumbuhkan rasa syukur.",
               category: "fungsi",
-              icon: "fa-solid fa-magnifying-glass-chart",
+              icon: "fa-solid fa-hourglass-half",
               link: "https://yusma1122.github.io/islamic-age-reflection/",
             },
             {
-              name: "Sunset Direction",
+              name: "Electric Bike Cost Calculator",
               description:
-                "Membantu mencari tahu arah sunset dengan menggunakan HP berbasis GPS",
+                "Analisis lengkap biaya operasional dan ROI untuk investasi e-bike Anda.",
               category: "fungsi",
-              icon: "fa-solid fa-magnifying-glass-chart",
-              link: "https://yusma1122.github.io/sunset-direction/",
+              icon: "fa-solid fa-bicycle",
+              link: "https://yusma1122.github.io/biaya-sepeda-listrik/",
             },
-            {
-              name: "Name Picker",
-              description:
-                "Mengambil nama acak dalam skema kloter untuk mempermudah undian berbasis digital.",
-              category: "fungsi",
-              icon: "fa-solid fa-magnifying-glass-chart",
-              link: "https://yusma1122.github.io/name-picker/",
-            },
-            {
-              name: "Running Lap Counter",
-              description:
-                "Hitng berapa lap kamu sudah lari, menggunakan tracker GPS",
-              category: "fungsi",
-              icon: "fa-solid fa-magnifying-glass-chart",
-              link: "https://yusma1122.github.io/running-lap-counter/",
-            },
+
             // ── Experimental ──
             {
               name: "Lumivox Spectrum App",
               description:
                 "App Spectrum Maker dengan media tools lengkap, mulai dari pengolahan foto hingga penyesuaian spektrum.",
               category: "experimental",
-              icon: "fa-solid fa-clock",
+              icon: "fa-solid fa-wave-square",
               link: "https://yusma1122.github.io/lumivox/",
             },
             {
@@ -1557,15 +1568,29 @@
               description:
                 "Simulasi jam analog dengan tema perubahan hari didalamnya",
               category: "experimental",
-              icon: "fa-solid fa-sparkles",
+              icon: "fa-solid fa-clock",
               link: "https://yusma1122.github.io/adaptive-clock/",
+            },
+            {
+              name: "Finger Calculator | Mediapipe",
+              description: "Kalkulator menghitung angka dengan input jari.",
+              category: "experimental",
+              icon: "fa-solid fa-calculator",
+              link: "https://yusma1122.github.io/hand-gesture-calculator/",
+            },
+            {
+              name: "Finger Counter | Mediapipe",
+              description: "Komputer mendeteksi jari jari yang kita ajukan.",
+              category: "experimental",
+              icon: "fa-solid fa-hand",
+              link: "https://yusma1122.github.io/finger-counter/",
             },
             {
               name: "Pinch Morse | Mediapipe",
               description:
                 "Menerjemahkan kode morse dengan cubitan jari menggunakan mediapipe dari google",
               category: "experimental",
-              icon: "fa-solid fa-arrows-left-right",
+              icon: "fa-solid fa-hand",
               link: "https://yusma1122.github.io/mediapipe-morse-code/",
             },
             {
@@ -1573,7 +1598,7 @@
               description:
                 "Bermain game memotong buah menggunakan jempol seperti fruit ninja !",
               category: "experimental",
-              icon: "fa-solid fa-key",
+              icon: "fa-solid fa-apple-whole",
               link: "https://yusma1122.github.io/mediapipe-fruit-ninja/",
             },
             {
@@ -1581,15 +1606,54 @@
               description:
                 "Bermain game menggambar menggunakan jarimu, bebas untuk menggambar apa aja!",
               category: "experimental",
-              icon: "fa-solid fa-key",
+              icon: "fa-solid fa-pen",
               link: "https://yusma1122.github.io/mediapipe-air-drawing/",
             },
             {
               name: "Pich Countdown",
               description: "Cubit untuk menghitung mungdur.",
               category: "experimental",
-              icon: "fa-solid fa-palette",
+              icon: "fa-solid fa-hourglass-start",
               link: "https://yusma1122.github.io/futuristic-countdown/",
+            },
+            {
+              name: "Sunset Direction",
+              description:
+                "Membantu mencari tahu arah sunset dengan menggunakan HP berbasis GPS.",
+              category: "experimental",
+              icon: "fa-solid fa-sun",
+              link: "https://yusma1122.github.io/sunset-direction/",
+            },
+            {
+              name: "Item Pass Counter",
+              description: "Menghitung benda yang lewat pada kamera.",
+              category: "experimental",
+              icon: "fa-solid fa-box",
+              link: "https://yusma1122.github.io/item-counter/",
+            },
+            {
+              name: "Color Detector",
+              description: "Deteksi warna pada sebuah kamera webcam.",
+              category: "experimental",
+              icon: "fa-solid fa-eye-dropper",
+              link: "https://yusma1122.github.io/color-detector/",
+            },
+
+            // ── Company Profile ──
+            {
+              name: "CV. Peninsula Abadi",
+              description:
+                "Perusahaan bergerak dibidang Teknologi Informasi service.",
+              category: "company-profile",
+              icon: "fa-solid fa-building",
+              link: "https://yusma1122.github.io/peninsula/",
+            },
+            {
+              name: "Musium Wasaka",
+              description: "Tempat rekreasi musium di banjarmasin",
+              category: "company-profile",
+              icon: "fa-solid fa-landmark",
+              link: "https://yusma1122.github.io/wasaka-museum/",
             },
           ],
 

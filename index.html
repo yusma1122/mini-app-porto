@@ -1,0 +1,1744 @@
+<!doctype html>
+<html lang="id" x-data="appData()" :class="{ 'dark': darkMode }">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mini Apps Porto</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <!-- Alpine.js -->
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+
+    <!-- AOS -->
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
+    <script>
+      window.tailwind = window.tailwind || {};
+      window.tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            fontFamily: {
+              display: ["Syne", "sans-serif"],
+              body: ["DM Sans", "sans-serif"],
+            },
+            colors: {
+              teal: {
+                400: "#2DD4BF",
+                500: "#14B8A6",
+                600: "#0D9488",
+              },
+              cosmic: {
+                950: "#020817",
+                900: "#060f1e",
+                800: "#0b1929",
+                700: "#0f2133",
+                600: "#162840",
+              },
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      /* ── Dark mode (Yellow + Black) ── */
+      :root,
+      html.dark {
+        --teal: #facc15; /* kuning utama (gold) */
+        --teal-dim: rgba(250, 204, 21, 0.12);
+        --teal-glow: rgba(250, 204, 21, 0.35);
+        --bg-base: #0a0a0a; /* hitam pekat */
+        --bg-card: rgba(20, 20, 20, 0.85);
+        --text-primary: #fefce8; /* putih agak warm */
+        --text-muted: #a1a1aa; /* abu soft */
+        --border: rgba(250, 204, 21, 0.2);
+        --nav-bg: rgba(10, 10, 10, 0.7);
+        --noise-opacity: 0.25;
+        --particle-opacity: 0.4;
+      }
+
+      /* ── Light mode (Yellow Theme) ── */
+      html:not(.dark) {
+        --teal: #eab308; /* kuning utama */
+        --teal-dim: rgba(234, 179, 8, 0.12);
+        --teal-glow: rgba(234, 179, 8, 0.25);
+        --bg-base: #fefce8; /* kuning sangat soft */
+        --bg-card: rgba(255, 255, 255, 0.9);
+        --text-primary: #1c1917; /* hitam soft */
+        --text-muted: #78716c; /* abu hangat */
+        --border: rgba(234, 179, 8, 0.25);
+        --nav-bg: rgba(254, 252, 232, 0.8);
+        --noise-opacity: 0.08;
+        --particle-opacity: 0.25;
+      }
+
+      /* Smooth transition saat toggle */
+      *,
+      *::before,
+      *::after {
+        transition:
+          background-color 0.3s ease,
+          border-color 0.3s ease,
+          color 0.3s ease,
+          box-shadow 0.3s ease;
+      }
+      /* Jangan transisi pada animasi/transform agar tidak lambat */
+      canvas,
+      .profile-ring::before,
+      .profile-ring::after,
+      .card-open-btn i,
+      .social-link,
+      .btn-primary,
+      .app-card {
+        transition: unset;
+      }
+      .app-card {
+        transition:
+          transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+          border-color 0.3s ease,
+          box-shadow 0.3s ease,
+          background-color 0.3s ease;
+      }
+      .social-link {
+        transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .btn-primary {
+        transition:
+          transform 0.25s ease,
+          box-shadow 0.25s ease;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "DM Sans", sans-serif;
+        background-color: var(--bg-base);
+        color: var(--text-primary);
+        overflow-x: hidden;
+      }
+
+      /* ── Canvas BG ── */
+      #bg-canvas {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        opacity: var(--particle-opacity);
+        transition: opacity 0.3s ease;
+      }
+
+      /* ── Noise overlay ── */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 1;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+        pointer-events: none;
+        opacity: var(--noise-opacity);
+        transition: opacity 0.3s ease;
+      }
+
+      main {
+        position: relative;
+        z-index: 2;
+      }
+
+      /* ── Navbar ── */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        background: var(--nav-bg);
+        border-bottom: 1px solid var(--border);
+      }
+
+      /* ── Hero ── */
+      .hero-section {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        padding-top: 80px;
+      }
+
+      .profile-ring {
+        position: relative;
+        display: inline-block;
+      }
+
+      .profile-ring::before {
+        content: "";
+        position: absolute;
+        inset: -4px;
+        border-radius: 50%;
+        background: conic-gradient(
+          from 0deg,
+          var(--teal),
+          transparent 60%,
+          var(--teal)
+        );
+        animation: spin 6s linear infinite;
+        z-index: 0;
+      }
+
+      .profile-ring::after {
+        content: "";
+        position: absolute;
+        inset: -12px;
+        border-radius: 50%;
+        background: radial-gradient(circle, var(--teal-glow), transparent 70%);
+        z-index: 0;
+        animation: pulse-glow 3s ease-in-out infinite;
+      }
+
+      .profile-img-wrap {
+        position: relative;
+        z-index: 1;
+        border-radius: 50%;
+        overflow: hidden;
+        width: 200px;
+        height: 200px;
+        border: 3px solid var(--bg-base);
+      }
+
+      @media (min-width: 768px) {
+        .profile-img-wrap {
+          width: 260px;
+          height: 260px;
+        }
+      }
+
+      .profile-img-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes pulse-glow {
+        0%,
+        100% {
+          opacity: 0.4;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.8;
+          transform: scale(1.05);
+        }
+      }
+
+      /* ── Hero text ── */
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--teal-dim);
+        border: 1px solid var(--border);
+        border-radius: 100px;
+        padding: 4px 14px;
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--teal);
+        margin-bottom: 1.2rem;
+        font-family: "DM Sans", sans-serif;
+      }
+
+      .hero-badge .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--teal);
+        animation: blink 2s ease-in-out infinite;
+      }
+
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.2;
+        }
+      }
+
+      .display-name {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: clamp(2.4rem, 6vw, 4.5rem);
+        line-height: 1.08;
+        letter-spacing: -0.02em;
+      }
+
+      .name-accent {
+        background: linear-gradient(135deg, var(--teal) 0%, #a1a1a1 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .hero-desc {
+        font-size: 1.05rem;
+        line-height: 1.75;
+        color: var(--text-muted);
+        max-width: 700px;
+        font-weight: 300;
+      }
+
+      /* ── Social icons ── */
+      .social-link {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        background: rgba(234, 179, 8, 0.25);
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        text-decoration: none;
+      }
+
+      .social-link:hover {
+        background: var(--teal-dim);
+        border-color: var(--teal);
+        color: var(--teal);
+        transform: translateY(-3px) scale(1.08);
+        box-shadow: 0 8px 24px var(--teal-glow);
+      }
+
+      /* ── CTA Button ── */
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--teal);
+        color: var(--bg-base);
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 0.9rem;
+        letter-spacing: 0.03em;
+        padding: 12px 24px;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        border: none;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-primary::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.15),
+          transparent
+        );
+        opacity: 0;
+        transition: opacity 0.25s;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 32px rgba(234, 179, 8, 0.25);
+      }
+
+      .btn-primary:hover::before {
+        opacity: 1;
+      }
+
+      .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: transparent;
+        color: var(--text-primary);
+        font-family: "Syne", sans-serif;
+        font-weight: 600;
+        font-size: 0.9rem;
+        padding: 11px 24px;
+        border-radius: 10px;
+        text-decoration: none;
+        border: 1px solid var(--border);
+        transition: all 0.25s ease;
+        cursor: pointer;
+      }
+
+      .btn-secondary:hover {
+        background: var(--teal-dim);
+        border-color: var(--teal);
+        color: var(--teal);
+        transform: translateY(-2px);
+      }
+
+      /* ── Section titles ── */
+      .section-eyebrow {
+        font-size: 0.75rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--teal);
+        font-family: "DM Sans", sans-serif;
+        font-weight: 500;
+      }
+
+      .section-title {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: clamp(2rem, 4vw, 3rem);
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+        color: var(--text-primary);
+      }
+
+      /* ── Filter pills ── */
+      .filter-pill {
+        padding: 7px 18px;
+        border-radius: 100px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.85rem;
+        font-weight: 500;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        letter-spacing: 0.02em;
+      }
+
+      .filter-pill:hover {
+        border-color: var(--teal);
+        color: var(--teal);
+      }
+
+      .filter-pill.active {
+        background: var(--teal);
+        border-color: var(--teal);
+        color: var(--bg-base);
+        font-weight: 700;
+        box-shadow: 0 4px 16px rgba(234, 179, 8, 0.25);
+      }
+
+      /* ── App cards ── */
+      .app-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.6rem;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .app-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--teal),
+          transparent
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .app-card:hover {
+        transform: translateY(-6px) scale(1.015);
+        border-color: rgba(212, 195, 45, 0.4);
+        box-shadow:
+          0 20px 48px rgba(0, 0, 0, 0.4),
+          0 0 0 1px rgba(212, 201, 45, 0.1),
+          0 -2px 24px rgba(212, 201, 45, 0.08);
+      }
+
+      .app-card:hover::before {
+        opacity: 1;
+      }
+
+      .card-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background: var(--teal-dim);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        color: var(--teal);
+        flex-shrink: 0;
+      }
+
+      .card-category-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.72rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 100px;
+      }
+
+      .badge-fungsi {
+        background: rgba(73, 212, 45, 0.1);
+        color: #39b400;
+        border: 1px solid rgba(73, 212, 45, 0.2);
+      }
+
+      .badge-experimental {
+        background: rgba(247, 131, 85, 0.1);
+        color: #ca512c;
+        border: 1px solid rgba(247, 131, 85, 0.2);
+      }
+
+      .card-name {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--text-primary);
+        letter-spacing: -0.01em;
+      }
+
+      .card-desc {
+        font-size: 0.88rem;
+        line-height: 1.65;
+        color: var(--text-muted);
+        flex: 1;
+      }
+
+      .card-open-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-family: "Syne", sans-serif;
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        color: var(--teal);
+        text-decoration: none;
+        padding: 9px 16px;
+        border: 1px solid rgba(212, 195, 45, 0.25);
+        border-radius: 8px;
+        background: rgba(212, 195, 45, 0.06);
+        transition: all 0.2s ease;
+        width: fit-content;
+        margin-top: auto;
+      }
+
+      .card-open-btn:hover {
+        background: var(--teal);
+        color: var(--bg-base);
+        border-color: var(--teal);
+        gap: 10px;
+      }
+
+      .card-open-btn i {
+        font-size: 0.75rem;
+        transition: transform 0.2s;
+      }
+
+      .card-open-btn:hover i {
+        transform: translateX(3px);
+      }
+
+      /* ── Stats strip ── */
+      .stat-item {
+        text-align: center;
+        padding: 1.5rem;
+      }
+
+      .stat-num {
+        font-family: "Syne", sans-serif;
+        font-size: 2.4rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--teal), #a1a1a1);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .stat-label {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-top: 4px;
+      }
+
+      /* ── Footer ── */
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 2rem 0;
+        text-align: center;
+        font-size: 0.82rem;
+        color: var(--text-muted);
+      }
+
+      /* ── Dark mode toggle ── */
+      .dark-toggle {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.07);
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.95rem;
+      }
+
+      .dark-toggle:hover {
+        background: var(--teal-dim);
+        border-color: var(--teal);
+        color: var(--teal);
+      }
+
+      /* ── Scroll to top ── */
+      .scroll-top {
+        position: fixed;
+        bottom: 28px;
+        right: 28px;
+        z-index: 99;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: var(--teal);
+        color: var(--bg-base);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 8px 24px rgb(207, 167, 4);
+        transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        border: none;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .scroll-top.visible {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .scroll-top:hover {
+        transform: translateY(-4px) scale(1.08);
+      }
+
+      /* ── Divider ── */
+      .section-divider {
+        width: 48px;
+        height: 3px;
+        background: linear-gradient(90deg, var(--teal), transparent);
+        border-radius: 2px;
+        margin: 12px 0 0;
+      }
+
+      /* ── Page load animation ── */
+      .fade-in-up {
+        opacity: 0;
+        transform: translateY(24px);
+        animation: fadeInUp 0.7s ease forwards;
+      }
+
+      @keyframes fadeInUp {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .delay-1 {
+        animation-delay: 0.1s;
+      }
+      .delay-2 {
+        animation-delay: 0.2s;
+      }
+      .delay-3 {
+        animation-delay: 0.35s;
+      }
+      .delay-4 {
+        animation-delay: 0.5s;
+      }
+      .delay-5 {
+        animation-delay: 0.65s;
+      }
+      .delay-6 {
+        animation-delay: 0.8s;
+      }
+
+      /* ── Grid empty state ── */
+      .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--text-muted);
+      }
+
+      /* Card entry animation when paged */
+      @keyframes cardIn {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .app-card {
+        animation: cardIn 0.35s ease both;
+      }
+
+      /* ── Pagination ── */
+      .pagination {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 2.5rem;
+        flex-wrap: wrap;
+      }
+
+      .page-info {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        letter-spacing: 0.04em;
+        text-align: center;
+        margin-top: 1rem;
+      }
+
+      .page-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Syne", sans-serif;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        text-decoration: none;
+      }
+
+      .page-btn:hover:not(:disabled):not(.page-dots) {
+        border-color: var(--teal);
+        color: var(--teal);
+        background: var(--teal-dim);
+        transform: translateY(-2px);
+      }
+
+      .page-btn.active {
+        background: var(--teal);
+        border-color: var(--teal);
+        color: var(--bg-base);
+        box-shadow: 0 4px 16px rgba(250, 204, 21, 0.35);
+      }
+
+      .page-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+
+      .page-btn.page-dots {
+        cursor: default;
+        border-color: transparent;
+        background: transparent;
+        color: var(--text-muted);
+        font-size: 1rem;
+        letter-spacing: 0.1em;
+      }
+
+      .page-nav-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--border);
+        background: rgba(212, 187, 45, 0.05);
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        font-size: 0.8rem;
+      }
+
+      .page-nav-btn:hover:not(:disabled) {
+        border-color: var(--teal);
+        color: var(--teal);
+        background: var(--teal-dim);
+        transform: translateY(-2px);
+      }
+
+      .page-nav-btn:disabled {
+        opacity: 0.25;
+        cursor: not-allowed;
+      }
+
+      /* Card grid fade transition */
+      .cards-wrapper {
+        transition: opacity 0.2s ease;
+      }
+      .cards-wrapper.fading {
+        opacity: 0;
+      }
+
+      /* ── Responsive tweaks ── */
+      @media (max-width: 768px) {
+        .hero-section {
+          padding-top: 90px;
+        }
+        .profile-img-wrap {
+          width: 160px;
+          height: 160px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Particle canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- ── NAVBAR ─────────────────────────────── -->
+    <nav>
+      <div
+        class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between"
+      >
+        <a
+          href="#"
+          class="font-display font-bold text-lg tracking-tight"
+          style="color: var(--teal)"
+        >
+          iyus<span style="color: var(--text-primary)">.dev</span>
+        </a>
+
+        <div class="hidden md:flex items-center gap-6">
+          <a
+            href="#about"
+            class="text-sm font-medium transition-colors hover:text-teal-400"
+            style="color: var(--text-muted)"
+            >About</a
+          >
+          <a
+            href="#apps"
+            class="text-sm font-medium transition-colors hover:text-teal-400"
+            style="color: var(--text-muted)"
+            >Mini Apps</a
+          >
+          <a
+            href="#contact"
+            class="text-sm font-medium transition-colors hover:text-teal-400"
+            style="color: var(--text-muted)"
+            >Contact</a
+          >
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button
+            class="dark-toggle"
+            @click="darkMode = !darkMode"
+            :title="darkMode ? 'Light mode' : 'Dark mode'"
+          >
+            <i :class="darkMode ? 'fa-solid fa-sun' : 'fa-solid fa-moon'"></i>
+          </button>
+          <a href="#apps" class="btn-primary hidden sm:inline-flex">
+            <i class="fa-solid fa-grid-2 text-xs"></i> My Apps
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <!-- ── HERO SECTION ───────────────────────── -->
+      <section id="about" class="hero-section px-5">
+        <div class="max-w-6xl mx-auto w-full">
+          <div
+            class="flex flex-col-reverse md:flex-row items-center gap-12 md:gap-16 lg:gap-24"
+          >
+            <!-- Text -->
+            <div class="flex-1 text-center md:text-left">
+              <div class="fade-in-up delay-1">
+                <div
+                  class="hero-badge"
+                  style="display: inline-flex; margin-bottom: 1.2rem"
+                >
+                  <span class="dot"></span> Available for projects
+                </div>
+              </div>
+
+              <div class="fade-in-up delay-2">
+                <h1 class="display-name mb-5">
+                  Halo, saya<br />
+                  <span class="name-accent">Yusma Rahman</span>
+                </h1>
+              </div>
+
+              <div class="fade-in-up delay-3">
+                <p class="hero-desc mb-7">
+                  Developer yang suka membuat
+                  <strong style="color: var(--text-primary); font-weight: 500"
+                    >tools kecil</strong
+                  >
+                  untuk mempermudah pekerjaan dan bereksperimen dengan
+                  JavaScript. Setiap baris kode adalah solusi, setiap proyek
+                  adalah petualangan baru.
+                </p>
+              </div>
+
+              <!-- Social links -->
+              <div
+                class="fade-in-up delay-4 flex items-center gap-3 justify-center md:justify-start mb-8"
+              >
+                <a
+                  href="https://github.com/"
+                  target="_blank"
+                  class="social-link"
+                  title="GitHub"
+                >
+                  <i class="fa-brands fa-github"></i>
+                </a>
+                <a
+                  href="https://linkedin.com/"
+                  target="_blank"
+                  class="social-link"
+                  title="LinkedIn"
+                >
+                  <i class="fa-brands fa-linkedin-in"></i>
+                </a>
+                <a
+                  href="https://instagram.com/"
+                  target="_blank"
+                  class="social-link"
+                  title="Instagram"
+                >
+                  <i class="fa-brands fa-instagram"></i>
+                </a>
+              </div>
+
+              <!-- CTA buttons -->
+              <div
+                class="fade-in-up delay-5 flex items-center gap-3 justify-center md:justify-start flex-wrap"
+              >
+                <a href="#apps" class="btn-primary">
+                  <i class="fa-solid fa-rocket text-xs"></i> Lihat Mini Apps
+                </a>
+                <a href="#contact" class="btn-secondary">
+                  <i class="fa-solid fa-paper-plane text-xs"></i> Hubungi Saya
+                </a>
+              </div>
+            </div>
+
+            <!-- Photo -->
+            <div class="fade-in-up delay-2 flex-shrink-0 flex justify-center">
+              <div class="profile-ring">
+                <div class="profile-img-wrap">
+                  <img
+                    src="img/iyus.png"
+                    alt="Iyus FPV"
+                    style="background: #0b1929"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div
+            class="fade-in-up delay-6 mt-16 md:mt-20 grid grid-cols-3 gap-px rounded-2xl overflow-hidden"
+            style="background: var(--border); border: 1px solid var(--border)"
+          >
+            <div class="stat-item" style="background: var(--bg-card)">
+              <div class="stat-num">18+</div>
+              <div class="stat-label">Mini Apps</div>
+            </div>
+            <div class="stat-item" style="background: var(--bg-card)">
+              <div class="stat-num">2</div>
+              <div class="stat-label">Kategori</div>
+            </div>
+            <div class="stat-item" style="background: var(--bg-card)">
+              <div class="stat-num">∞</div>
+              <div class="stat-label">Eksperimen</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── MINI APPS SECTION ───────────────────── -->
+      <section id="apps" class="py-24 px-5">
+        <div class="max-w-6xl mx-auto">
+          <!-- Header -->
+          <div class="mb-12" data-aos="fade-up">
+            <p class="section-eyebrow mb-3">— Karya Saya</p>
+            <h2 class="section-title mb-2">My Mini Apps</h2>
+            <div class="section-divider"></div>
+            <p
+              class="mt-5 max-w-lg"
+              style="
+                color: var(--text-muted);
+                font-size: 0.95rem;
+                line-height: 1.7;
+              "
+            >
+              Kumpulan tools dan eksperimen yang saya buat. Dari utilitas
+              sehari-hari hingga playground kreatif — semuanya open & gratis.
+            </p>
+          </div>
+
+          <!-- Filter pills -->
+          <div
+            class="flex flex-wrap gap-2 mb-10"
+            data-aos="fade-up"
+            data-aos-delay="100"
+          >
+            <template x-for="cat in categories" :key="cat.value">
+              <button
+                class="filter-pill"
+                :class="{ active: activeFilter === cat.value }"
+                @click="setFilter(cat.value)"
+                x-text="cat.label"
+              ></button>
+            </template>
+          </div>
+
+          <!-- Cards grid -->
+          <div class="cards-wrapper" id="cards-wrapper">
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+              id="apps-grid"
+            >
+              <template
+                x-for="(app, i) in pagedApps"
+                :key="app.name + currentPage"
+              >
+                <div class="app-card" :style="`animation-delay:${i * 60}ms`">
+                  <!-- Top row: icon + badge -->
+                  <div class="flex items-start justify-between gap-3">
+                    <div class="card-icon">
+                      <i :class="app.icon"></i>
+                    </div>
+                    <span
+                      class="card-category-badge"
+                      :class="app.category === 'fungsi' ? 'badge-fungsi' : 'badge-experimental'"
+                    >
+                      <i
+                        :class="app.category === 'fungsi' ? 'fa-solid fa-wrench' : 'fa-solid fa-flask'"
+                        style="font-size: 0.65rem"
+                      ></i>
+                      <span
+                        x-text="app.category === 'fungsi' ? 'Fungsi' : 'Experimental'"
+                      ></span>
+                    </span>
+                  </div>
+
+                  <!-- Name + desc -->
+                  <div>
+                    <div class="card-name" x-text="app.name"></div>
+                    <p class="card-desc mt-1" x-text="app.description"></p>
+                  </div>
+
+                  <!-- Open btn -->
+                  <a :href="app.link" target="_blank" class="card-open-btn">
+                    Open App <i class="fa-solid fa-arrow-right"></i>
+                  </a>
+                </div>
+              </template>
+
+              <!-- Empty state -->
+              <div
+                x-show="filteredApps.length === 0"
+                class="empty-state col-span-full"
+              >
+                <i
+                  class="fa-solid fa-inbox text-4xl mb-3"
+                  style="color: var(--border)"
+                ></i>
+                <p>Tidak ada app di kategori ini.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pagination -->
+          <div x-show="totalPages > 1">
+            <!-- Page info -->
+            <p class="page-info">
+              Menampilkan
+              <strong
+                x-text="pageStart"
+                style="color: var(--text-primary)"
+              ></strong
+              >–<strong
+                x-text="pageEnd"
+                style="color: var(--text-primary)"
+              ></strong>
+              dari
+              <strong
+                x-text="filteredApps.length"
+                style="color: var(--teal)"
+              ></strong>
+              apps
+            </p>
+
+            <!-- Pagination controls -->
+            <div class="pagination">
+              <!-- Prev -->
+              <button
+                class="page-nav-btn"
+                :disabled="currentPage === 1"
+                @click="goToPage(currentPage - 1)"
+              >
+                <i class="fa-solid fa-chevron-left"></i>
+              </button>
+
+              <!-- Page numbers -->
+              <template x-for="p in pageButtons" :key="p">
+                <button
+                  :class="p === '…' ? 'page-btn page-dots' : (p === currentPage ? 'page-btn active' : 'page-btn')"
+                  :disabled="p === '…'"
+                  @click="p !== '…' && goToPage(p)"
+                  x-text="p"
+                ></button>
+              </template>
+
+              <!-- Next -->
+              <button
+                class="page-nav-btn"
+                :disabled="currentPage === totalPages"
+                @click="goToPage(currentPage + 1)"
+              >
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── CONTACT SECTION ────────────────────── -->
+      <section id="contact" class="py-24 px-5">
+        <div class="max-w-6xl mx-auto">
+          <div
+            class="rounded-2xl overflow-hidden"
+            style="
+              background: var(--bg-card);
+              border: 1px solid var(--border);
+              backdrop-filter: blur(20px);
+            "
+            data-aos="fade-up"
+          >
+            <div class="flex flex-col md:flex-row">
+              <!-- Left -->
+              <div class="flex-1 p-8 md:p-12">
+                <p class="section-eyebrow mb-3">— Let's Talk</p>
+                <h2
+                  class="section-title mb-4"
+                  style="font-size: clamp(1.6rem, 3vw, 2.2rem)"
+                >
+                  Ada proyek atau ide?<br />Hubungi saya.
+                </h2>
+                <p
+                  style="
+                    color: var(--text-muted);
+                    font-size: 0.92rem;
+                    line-height: 1.7;
+                    max-width: 380px;
+                  "
+                  class="mb-8"
+                >
+                  Terbuka untuk kolaborasi, diskusi teknis, atau sekadar ngobrol
+                  soal JavaScript dan eksperimen digital.
+                </p>
+
+                <div class="flex flex-col gap-4">
+                  <a
+                    href="https://github.com/"
+                    target="_blank"
+                    class="flex items-center gap-3 group"
+                    style="text-decoration: none"
+                  >
+                    <div class="social-link" style="flex-shrink: 0">
+                      <i class="fa-brands fa-github"></i>
+                    </div>
+                    <div>
+                      <div
+                        style="
+                          font-size: 0.8rem;
+                          color: var(--text-muted);
+                          letter-spacing: 0.05em;
+                          text-transform: uppercase;
+                        "
+                      >
+                        GitHub
+                      </div>
+                      <div
+                        style="
+                          font-size: 0.9rem;
+                          color: var(--text-primary);
+                          font-weight: 500;
+                        "
+                      >
+                        github.com/iyusfpv
+                      </div>
+                    </div>
+                  </a>
+                  <a
+                    href="https://linkedin.com/"
+                    target="_blank"
+                    class="flex items-center gap-3 group"
+                    style="text-decoration: none"
+                  >
+                    <div class="social-link" style="flex-shrink: 0">
+                      <i class="fa-brands fa-linkedin-in"></i>
+                    </div>
+                    <div>
+                      <div
+                        style="
+                          font-size: 0.8rem;
+                          color: var(--text-muted);
+                          letter-spacing: 0.05em;
+                          text-transform: uppercase;
+                        "
+                      >
+                        LinkedIn
+                      </div>
+                      <div
+                        style="
+                          font-size: 0.9rem;
+                          color: var(--text-primary);
+                          font-weight: 500;
+                        "
+                      >
+                        linkedin.com/in/iyusfpv
+                      </div>
+                    </div>
+                  </a>
+                  <a
+                    href="https://instagram.com/"
+                    target="_blank"
+                    class="flex items-center gap-3 group"
+                    style="text-decoration: none"
+                  >
+                    <div class="social-link" style="flex-shrink: 0">
+                      <i class="fa-brands fa-instagram"></i>
+                    </div>
+                    <div>
+                      <div
+                        style="
+                          font-size: 0.8rem;
+                          color: var(--text-muted);
+                          letter-spacing: 0.05em;
+                          text-transform: uppercase;
+                        "
+                      >
+                        Instagram
+                      </div>
+                      <div
+                        style="
+                          font-size: 0.9rem;
+                          color: var(--text-primary);
+                          font-weight: 500;
+                        "
+                      >
+                        @iyusfpv
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Right: decorative -->
+              <div
+                class="hidden md:flex flex-col items-center justify-center p-12 relative overflow-hidden"
+                style="
+                  background: linear-gradient(
+                    135deg,
+                    rgba(212, 201, 45, 0.06),
+                    rgba(248, 219, 56, 0.04)
+                  );
+                  border-left: 1px solid var(--border);
+                  min-width: 280px;
+                "
+              >
+                <div
+                  style="
+                    font-size: 6rem;
+                    opacity: 0.08;
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                  "
+                >
+                  <i class="fa-solid fa-code"></i>
+                </div>
+                <div class="text-center relative z-10">
+                  <div
+                    style="
+                      font-family: &quot;Syne&quot;, sans-serif;
+                      font-size: 3rem;
+                      font-weight: 800;
+                      color: var(--teal);
+                      line-height: 1;
+                    "
+                  >
+                    { }
+                  </div>
+                  <div
+                    style="
+                      font-size: 0.8rem;
+                      color: var(--text-muted);
+                      margin-top: 8px;
+                      letter-spacing: 0.1em;
+                      text-transform: uppercase;
+                    "
+                  >
+                    Build. Break. Repeat.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ── FOOTER ─────────────────────────────── -->
+    <footer>
+      <div
+        class="max-w-6xl mx-auto px-5 flex flex-col sm:flex-row items-center justify-between gap-3"
+      >
+        <span
+          style="
+            font-family: &quot;Syne&quot;, sans-serif;
+            font-weight: 700;
+            color: var(--teal);
+          "
+          >iyus.dev</span
+        >
+        <span
+          >Made with <span style="color: var(--teal)">♥</span> using HTML, CSS &
+          JS · <span x-text="new Date().getFullYear()"></span
+        ></span>
+        <a
+          href="#about"
+          style="
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: color 0.2s;
+          "
+          onmouseover="this.style.color = 'var(--teal)'"
+          onmouseout="this.style.color = 'var(--text-muted)'"
+        >
+          Back to top ↑
+        </a>
+      </div>
+    </footer>
+
+    <!-- Scroll to top button -->
+    <button
+      class="scroll-top"
+      id="scrollTopBtn"
+      onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"
+    >
+      <i class="fa-solid fa-arrow-up" style="font-size: 0.85rem"></i>
+    </button>
+
+    <!-- ── SCRIPTS ─────────────────────────────── -->
+    <script>
+      // ── Alpine data ──────────────────────────
+      function appData() {
+        return {
+          darkMode: true,
+          activeFilter: "all",
+          currentPage: 1,
+          perPage: 6,
+
+          categories: [
+            { value: "all", label: "✦ All Apps" },
+            { value: "fungsi", label: "⚙ Fungsi" },
+            { value: "experimental", label: "⚗ Experimental" },
+          ],
+
+          apps: [
+            // ── Fungsi ──
+            {
+              name: "KWH Calculator",
+              description:
+                "Hitung estimasi tagihan listrik bulanan berdasarkan konsumsi KWH perangkat elektronik rumah tangga.",
+              category: "fungsi",
+              icon: "fa-solid fa-bolt",
+              link: "#",
+            },
+            {
+              name: "Text Cleaner",
+              description:
+                "Bersihkan teks dari spasi berlebih, karakter aneh, dan format yang tidak diinginkan hanya dalam satu klik.",
+              category: "fungsi",
+              icon: "fa-solid fa-broom",
+              link: "#",
+            },
+            {
+              name: "JSON Formatter",
+              description:
+                "Format, validasi, dan prettify JSON dengan tampilan yang rapi. Mendukung syntax highlighting dan collapse tree.",
+              category: "fungsi",
+              icon: "fa-solid fa-brackets-curly",
+              link: "#",
+            },
+            {
+              name: "Unit Converter",
+              description:
+                "Konversi satuan panjang, berat, suhu, dan volume secara instan tanpa perlu Google.",
+              category: "fungsi",
+              icon: "fa-solid fa-arrows-left-right",
+              link: "#",
+            },
+            {
+              name: "Password Generator",
+              description:
+                "Buat password kuat dan aman dengan pilihan panjang, karakter, dan opsi mudah diingat.",
+              category: "fungsi",
+              icon: "fa-solid fa-key",
+              link: "#",
+            },
+            {
+              name: "Markdown Previewer",
+              description:
+                "Tulis dan preview Markdown secara real-time, dengan export ke HTML siap pakai.",
+              category: "fungsi",
+              icon: "fa-brands fa-markdown",
+              link: "#",
+            },
+            {
+              name: "Color Picker Pro",
+              description:
+                "Ambil warna dari layar, konversi HEX/RGB/HSL, dan simpan palet favorit kamu.",
+              category: "fungsi",
+              icon: "fa-solid fa-eye-dropper",
+              link: "#",
+            },
+            {
+              name: "Base64 Encoder",
+              description:
+                "Encode dan decode teks atau file ke format Base64 dengan cepat langsung di browser.",
+              category: "fungsi",
+              icon: "fa-solid fa-code",
+              link: "#",
+            },
+            {
+              name: "Cron Builder",
+              description:
+                "Buat ekspresi cron secara visual. Tidak perlu hafal syntax — cukup klik dan generate.",
+              category: "fungsi",
+              icon: "fa-solid fa-clock-rotate-left",
+              link: "#",
+            },
+            {
+              name: "Regex Tester",
+              description:
+                "Uji dan debug ekspresi reguler secara live dengan highlight match yang interaktif.",
+              category: "fungsi",
+              icon: "fa-solid fa-magnifying-glass-chart",
+              link: "#",
+            },
+            // ── Experimental ──
+            {
+              name: "Smooth Clock JS",
+              description:
+                "Jam analog interaktif dengan gerakan jarum yang halus dan smooth, dibuat murni menggunakan Canvas API.",
+              category: "experimental",
+              icon: "fa-solid fa-clock",
+              link: "#",
+            },
+            {
+              name: "Particle Playground",
+              description:
+                "Eksperimen partikel interaktif yang bereaksi terhadap cursor mouse. Kustomisasi jumlah, kecepatan, dan warna.",
+              category: "experimental",
+              icon: "fa-solid fa-sparkles",
+              link: "#",
+            },
+            {
+              name: "Gradient Generator",
+              description:
+                "Buat gradient CSS yang indah secara visual. Ekspor kode siap pakai untuk langsung digunakan di project.",
+              category: "experimental",
+              icon: "fa-solid fa-palette",
+              link: "#",
+            },
+            {
+              name: "Lissajous Draw",
+              description:
+                "Visualisasi kurva Lissajous real-time dengan kontrol frekuensi, fase, dan warna yang bisa diubah live.",
+              category: "experimental",
+              icon: "fa-solid fa-wave-square",
+              link: "#",
+            },
+            {
+              name: "Noise Terrain",
+              description:
+                "Generasi terrain 3D berbasis Perlin noise yang bergerak secara prosedural menggunakan WebGL.",
+              category: "experimental",
+              icon: "fa-solid fa-mountain",
+              link: "#",
+            },
+            {
+              name: "Audio Visualizer",
+              description:
+                "Visualisasi audio dari mikrofon atau file lokal dengan berbagai mode: waveform, bar, radial.",
+              category: "experimental",
+              icon: "fa-solid fa-music",
+              link: "#",
+            },
+            {
+              name: "Gravity Sim",
+              description:
+                "Simulasi gravitasi n-bodi sederhana di canvas. Tambahkan planet dan amati orbit yang terbentuk.",
+              category: "experimental",
+              icon: "fa-solid fa-circle-nodes",
+              link: "#",
+            },
+            {
+              name: "Pixel Rain",
+              description:
+                "Efek hujan karakter ala Matrix yang bisa dikustomisasi — karakter, kecepatan, warna, dan density.",
+              category: "experimental",
+              icon: "fa-solid fa-terminal",
+              link: "#",
+            },
+          ],
+
+          get filteredApps() {
+            if (this.activeFilter === "all") return this.apps;
+            return this.apps.filter((a) => a.category === this.activeFilter);
+          },
+
+          get totalPages() {
+            return Math.ceil(this.filteredApps.length / this.perPage);
+          },
+
+          get pageStart() {
+            return (this.currentPage - 1) * this.perPage + 1;
+          },
+
+          get pageEnd() {
+            return Math.min(
+              this.currentPage * this.perPage,
+              this.filteredApps.length,
+            );
+          },
+
+          get pagedApps() {
+            const start = (this.currentPage - 1) * this.perPage;
+            return this.filteredApps.slice(start, start + this.perPage);
+          },
+
+          // Generate page buttons with ellipsis for large page counts
+          get pageButtons() {
+            const total = this.totalPages;
+            const cur = this.currentPage;
+            if (total <= 7)
+              return Array.from({ length: total }, (_, i) => i + 1);
+            const pages = [];
+            pages.push(1);
+            if (cur > 3) pages.push("…");
+            for (
+              let i = Math.max(2, cur - 1);
+              i <= Math.min(total - 1, cur + 1);
+              i++
+            )
+              pages.push(i);
+            if (cur < total - 2) pages.push("…");
+            pages.push(total);
+            return pages;
+          },
+
+          goToPage(page) {
+            if (page < 1 || page > this.totalPages) return;
+            const wrapper = document.getElementById("cards-wrapper");
+            wrapper.classList.add("fading");
+            setTimeout(() => {
+              this.currentPage = page;
+              wrapper.classList.remove("fading");
+              // Smooth scroll to top of apps section
+              document
+                .getElementById("apps")
+                .scrollIntoView({ behavior: "smooth", block: "start" });
+            }, 180);
+          },
+
+          // Reset to page 1 when filter changes
+          setFilter(val) {
+            this.activeFilter = val;
+            this.currentPage = 1;
+          },
+        };
+      }
+
+      // ── AOS init ─────────────────────────────
+      document.addEventListener("DOMContentLoaded", () => {
+        AOS.init({
+          duration: 600,
+          easing: "ease-out-cubic",
+          once: true,
+          offset: 60,
+        });
+      });
+
+      // ── Scroll-to-top button ─────────────────
+      const scrollBtn = document.getElementById("scrollTopBtn");
+      window.addEventListener("scroll", () => {
+        scrollBtn.classList.toggle("visible", window.scrollY > 300);
+      });
+
+      // ── Particle canvas ───────────────────────
+      (function () {
+        const canvas = document.getElementById("bg-canvas");
+        const ctx = canvas.getContext("2d");
+        let W,
+          H,
+          particles = [];
+
+        function isDark() {
+          return document.documentElement.classList.contains("dark");
+        }
+
+        function getColors() {
+          return isDark()
+            ? { dot: "45,212,191", line: "56,189,248" }
+            : { dot: "13,148,136", line: "6,182,212" };
+        }
+
+        function resize() {
+          W = canvas.width = window.innerWidth;
+          H = canvas.height = window.innerHeight;
+        }
+
+        function Particle() {
+          this.reset();
+        }
+
+        Particle.prototype.reset = function () {
+          this.x = Math.random() * W;
+          this.y = Math.random() * H;
+          this.r = Math.random() * 1.5 + 0.3;
+          this.vx = (Math.random() - 0.5) * 0.3;
+          this.vy = (Math.random() - 0.5) * 0.3;
+          this.alpha = Math.random() * 0.5 + 0.1;
+          this.useDot = Math.random() > 0.5;
+        };
+
+        Particle.prototype.update = function () {
+          this.x += this.vx;
+          this.y += this.vy;
+          if (this.x < 0 || this.x > W || this.y < 0 || this.y > H)
+            this.reset();
+        };
+
+        function init() {
+          resize();
+          particles = Array.from({ length: 90 }, () => new Particle());
+        }
+
+        function drawConnections() {
+          const DIST = 120;
+          const colors = getColors();
+          for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+              const dx = particles[i].x - particles[j].x;
+              const dy = particles[i].y - particles[j].y;
+              const d = Math.sqrt(dx * dx + dy * dy);
+              if (d < DIST) {
+                const opacity = (1 - d / DIST) * (isDark() ? 0.2 : 0.15);
+                ctx.beginPath();
+                ctx.moveTo(particles[i].x, particles[i].y);
+                ctx.lineTo(particles[j].x, particles[j].y);
+                ctx.strokeStyle = `rgba(${colors.line},${opacity})`;
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+              }
+            }
+          }
+        }
+
+        function draw() {
+          ctx.clearRect(0, 0, W, H);
+          const colors = getColors();
+          particles.forEach((p) => {
+            p.update();
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${p.useDot ? colors.dot : colors.line},${p.alpha})`;
+            ctx.fill();
+          });
+          drawConnections();
+          requestAnimationFrame(draw);
+        }
+
+        window.addEventListener("resize", () => {
+          resize();
+        });
+        init();
+        draw();
+      })();
+    </script>
+  </body>
+</html>

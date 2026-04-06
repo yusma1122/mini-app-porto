@@ -143,17 +143,17 @@
               <div class="fade-in-up delay-3">
                 <p class="hero-desc mb-7">
                   Junior Web Developer sejak
-                  <strong style="color: var(--text-primary); font-weight: 500"
-                    >2025
+                  <strong style="color: var(--text-primary); font-weight: 500">
+                    2025
                   </strong>
                   yang membuat aplikasi kecil untuk belajar, bereksplorasi, dan
-                  <strong style="color: var(--text-primary); font-weight: 500"
-                    >menyelesaikan masalah sederhana.
+                  <strong style="color: var(--text-primary); font-weight: 500">
+                    menyelesaikan masalah sederhana.
                   </strong>
                   Proyek di sini merupakan arsip yang dapat digunakan, terbagi
                   dalam kategori
-                  <strong style="color: var(--text-primary); font-weight: 500"
-                    >Fungsi, Company Profile, dan Experimental.
+                  <strong style="color: var(--text-primary); font-weight: 500">
+                    Fungsi, Company Profile, Prompting Tool, dan Experimental.
                   </strong>
                 </p>
               </div>
@@ -217,7 +217,7 @@
 
           <!-- Stats -->
           <div
-            class="fade-in-up delay-6 mt-16 md:mt-20 grid grid-cols-2 md:grid-cols-4 gap-px rounded-2xl overflow-hidden"
+            class="fade-in-up delay-6 mt-16 md:mt-20 grid grid-cols-2 md:grid-cols-5 gap-px rounded-2xl overflow-hidden"
             style="background: var(--border); border: 1px solid var(--border)"
           >
             <div class="stat-item" style="background: var(--bg-card)">
@@ -231,6 +231,10 @@
             <div class="stat-item" style="background: var(--bg-card)">
               <div class="stat-num">2</div>
               <div class="stat-label">Company Profile</div>
+            </div>
+            <div class="stat-item" style="background: var(--bg-card)">
+              <div class="stat-num">2</div>
+              <div class="stat-label">Prompting Tool</div>
             </div>
             <div class="stat-item" style="background: var(--bg-card)">
               <div class="stat-num">∞</div>
@@ -256,7 +260,7 @@
                 line-height: 2;
               "
             >
-              Proyek di sini terbagi dalam tiga kategori:
+              Proyek di sini terbagi dalam beberapa kategori:
               <strong
                 style="
                   background: rgba(73, 212, 45, 0.1);
@@ -280,7 +284,19 @@
                 "
                 >Company Profile</strong
               >
-              untuk contoh website perusahaan, dan
+              untuk contoh website perusahaan,
+              <strong
+                style="
+                  background: rgba(85, 169, 247, 0.1);
+                  color: #2c56ca;
+                  border: 1px solid rgba(85, 142, 247, 0.2);
+                  font-weight: 500;
+                  border-radius: 999px;
+                  padding: 2px 8px;
+                "
+                >Prompting Tool</strong
+              >
+              untuk membuat prompt AI secara cepat dan efisien, serta
               <strong
                 style="
                   background: rgba(247, 131, 85, 0.1);
@@ -332,21 +348,25 @@
                     <span
                       class="card-category-badge"
                       :class="
-                      app.category === 'fungsi'
-                        ? 'badge-fungsi'
-                        : app.category === 'company-profile'
-                        ? 'badge-company-profile'
-                        : 'badge-experimental'
-                    "
+                        app.category === 'fungsi'
+                          ? 'badge-fungsi'
+                          : app.category === 'company-profile'
+                          ? 'badge-company-profile'
+                          : app.category === 'prompting-tool'
+                          ? 'badge-prompting-tool'
+                          : 'badge-experimental'
+                      "
                     >
                       <i
                         :class="
-                        app.category === 'fungsi'
-                          ? 'fa-solid fa-wrench'
-                          : app.category === 'company-profile'
-                          ? 'fa-solid fa-building'
-                          : 'fa-solid fa-flask'
-                      "
+                          app.category === 'fungsi'
+                            ? 'fa-solid fa-wrench'
+                            : app.category === 'company-profile'
+                            ? 'fa-solid fa-building'
+                            : app.category === 'prompting-tool'
+                            ? 'fa-solid fa-robot'
+                            : 'fa-solid fa-flask'
+                        "
                         style="font-size: 0.65rem"
                       ></i>
 
@@ -356,6 +376,8 @@
                           ? 'Fungsi'
                           : app.category === 'company-profile'
                           ? 'Company Profile'
+                          : app.category === 'prompting-tool'
+                          ? 'Prompting Tool'
                           : 'Experimental'
                       "
                       ></span>

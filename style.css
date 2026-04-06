@@ -476,6 +476,12 @@ nav {
   border: 1px solid rgba(85, 196, 247, 0.2);
 }
 
+.badge-prompting-tool {
+  background: rgba(85, 169, 247, 0.1);
+  color: #2c56ca;
+  border: 1px solid rgba(85, 142, 247, 0.2);
+}
+
 .card-name {
   font-family: "Syne", sans-serif;
   font-weight: 700;

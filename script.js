@@ -10,6 +10,7 @@ function appData() {
       { value: "all", label: "✦ All Apps" },
       { value: "fungsi", label: "⚙ Fungsi" },
       { value: "company-profile", label: "🖨 Company Profile" },
+      { value: "prompting-tool", label: "⚛ Prompting Tool" },
       { value: "experimental", label: "⚗ Experimental" },
     ],
 
@@ -127,14 +128,6 @@ function appData() {
         link: "https://yusma1122.github.io/lumivox/",
       },
       {
-        name: "Prompt Craft",
-        description:
-          "Jadi webdev tanpa harus ngoding !! ayo generate prompt mu disini dengan promt yang terstruktur",
-        category: "experimental",
-        icon: "fa-solid fa-wand-magic-sparkles",
-        link: "https://yusma1122.github.io/Promt-Craft/",
-      },
-      {
         name: "Clock Day Simulation",
         description:
           "Simulasi jam analog dengan tema perubahan hari didalamnya",
@@ -233,6 +226,23 @@ function appData() {
         category: "company-profile",
         icon: "fa-solid fa-landmark",
         link: "https://yusma1122.github.io/wasaka-museum/",
+      },
+      // ── Promting Tool ──
+      {
+        name: "Web Prompt Craft",
+        description:
+          "Jadi webdev tanpa harus ngoding !! ayo generate prompt mu disini dengan promt yang terstruktur",
+        category: "prompting-tool",
+        icon: "fa-solid fa-wand-magic-sparkles",
+        link: "https://yusma1122.github.io/Promt-Craft/",
+      },
+      {
+        name: "DubScript AI",
+        description:
+          "Isi detail konten, aktifkan Pro Settings untuk kontrol lebih dalam, lalu generate prompt siap pakai.",
+        category: "prompting-tool",
+        icon: "fa-solid fa-robot",
+        link: "https://yusma1122.github.io/Youtube-Script-Generator/",
       },
     ],
 
